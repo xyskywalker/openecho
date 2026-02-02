@@ -210,10 +210,84 @@ export class OpenEchoAgent {
       // 验证并执行
       const validatedInput = tool.parameters.parse(input);
       const result = await tool.handler(validatedInput);
+
+      // Agent 层降级策略：search 500 时用 feed 近似匹配
+      if (name === "moltbook_search" && this.isSearchFailure(result)) {
+        return await this.fallbackSearch(validatedInput as Record<string, unknown>);
+      }
+
       return result;
     } catch (error) {
       return { error: `工具执行失败: ${error}` };
     }
+  }
+
+  private isToolFailure(result: unknown): boolean {
+    if (!result || typeof result !== "object") return false;
+    const r = result as { success?: unknown };
+    return r.success === false;
+  }
+
+  private isSearchFailure(result: unknown): boolean {
+    if (!this.isToolFailure(result)) return false;
+    const r = result as { error?: unknown; debug?: unknown };
+    const err = typeof r.error === "string" ? r.error : "";
+    const status = (r.debug as { status?: unknown } | undefined)?.status;
+    return err.toLowerCase().includes("search failed") || status === 500;
+  }
+
+  private extractSearchQuery(input: Record<string, unknown>): string {
+    const q = input["query"];
+    if (typeof q === "string") return q;
+    return "";
+  }
+
+  private async fallbackSearch(input: Record<string, unknown>): Promise<unknown> {
+    const query = this.extractSearchQuery(input);
+    // 拉取近期帖子做近似匹配
+    const feed = await this.executeTool("moltbook_get_feed", {
+      sort: "new",
+      limit: 100,
+    });
+
+    if (!feed || typeof feed !== "object") {
+      return {
+        success: false,
+        error: "Search failed (fallback feed unavailable)",
+      };
+    }
+
+    const f = feed as { success?: boolean; posts?: Array<{ id: string; title: string; content?: string }> };
+    if (!f.success || !Array.isArray(f.posts)) {
+      return {
+        success: false,
+        error: "Search failed (fallback feed unavailable)",
+        original: input,
+      };
+    }
+
+    const q = query.trim().toLowerCase();
+    const matches = q
+      ? f.posts.filter((p) => {
+          const hay = `${p.title ?? ""} ${p.content ?? ""}`.toLowerCase();
+          return hay.includes(q);
+        })
+      : f.posts;
+
+    return {
+      success: true,
+      results: matches.slice(0, 20).map((p) => ({
+        id: p.id,
+        type: "post",
+        title: p.title,
+        content: p.content ?? "",
+        similarity: 0,
+        post_id: p.id,
+        fallback: true,
+      })),
+      note: "Moltbook 搜索接口当前失败，已使用最新帖子做近似匹配（非语义搜索，结果可能不完整）。",
+      query,
+    };
   }
 
   // --------------------------------------------------------------------------
@@ -246,6 +320,12 @@ export class OpenEchoAgent {
     } else {
       yield* this.chatStreamWithOpenAI(userMessage);
     }
+  }
+
+  /** 清空对话上下文（用于 /clear） */
+  resetConversation(): void {
+    this.conversationHistory = [];
+    this.openaiHistory = [];
   }
 
   /** 使用 Claude API 进行流式对话 */

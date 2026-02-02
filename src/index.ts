@@ -1078,9 +1078,45 @@ async function handleIdentityCommand(args: string[]): Promise<string> {
 
   switch (subcommand) {
     case "add": {
-      // 使用 readline 进行交互式输入
-      const name = await askQuestion("Agent 名称");
-      const description = await askQuestion("Agent 描述");
+      const mode = await askSelect("创建身份方式", [
+        { title: "手动输入", value: "manual", description: "手动填写 Agent 名称与描述" },
+        { title: "AI 辅助生成", value: "ai", description: "用自然语言描述用途，让模型生成草案" },
+      ]);
+
+      if (!mode) return chalk.yellow("已取消");
+
+      let name = "";
+      let description = "";
+
+      if (mode === "ai") {
+        const brief = await askQuestion("用一句话描述这个身份的用途/风格（越具体越好）");
+        if (!brief?.trim()) {
+          return chalk.red("描述不能为空");
+        }
+
+        // 让模型生成草案（名称 + 描述），并要求输出 JSON，便于解析
+        const agent = new OpenEchoAgent({ enableTools: false });
+        const draftPrompt = `请根据以下需求为 Moltbook Agent 生成一个注册用的名称(name)和简介(description)。\n\n需求: ${brief.trim()}\n\n要求:\n- name: 3-20 字符，英文字母/数字/下划线优先，避免空格\n- description: 1-2 句话，清晰说明你能做什么\n- 只输出 JSON：{"name":"...","description":"..."}（不要输出其它文字）`;
+        const draft = await agent.chat(draftPrompt);
+        try {
+          const parsed = JSON.parse(draft.text) as { name?: string; description?: string };
+          name = String(parsed.name || "").trim();
+          description = String(parsed.description || "").trim();
+        } catch {
+          return chalk.red("AI 生成草案失败：模型输出不是有效 JSON，请重试");
+        }
+
+        if (!name || !description) {
+          return chalk.red("AI 生成草案不完整，请重试");
+        }
+
+        const ok = await askConfirm(`确认使用该草案注册？\n- 名称: ${name}\n- 描述: ${description}`);
+        if (!ok) return chalk.yellow("已取消");
+      } else {
+        // 手动输入
+        name = (await askQuestion("Agent 名称")).trim();
+        description = (await askQuestion("Agent 描述")).trim();
+      }
 
       if (!name?.trim() || !description?.trim()) {
         return chalk.red("名称和描述不能为空");
@@ -1351,6 +1387,9 @@ async function startTUI(): Promise<void> {
       return await handleBuiltinCommand(command);
     },
     execChat: (message) => agent.chatStream(message),
+    onClear: () => {
+      agent.resetConversation();
+    },
     onExit: () => {
       hardExit();
     },

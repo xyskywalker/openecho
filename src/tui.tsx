@@ -34,6 +34,7 @@ interface TuiAppProps {
   commandsNeedArgs: string[];
   execBuiltinCommand: ExecBuiltinCommand;
   execChat: ExecChat;
+  onClear?: () => void;
   onReady?: (hooks: TuiHooks) => void;
   onExit: () => void;
 }
@@ -426,6 +427,16 @@ function TuiApp(props: TuiAppProps): React.ReactElement {
       isBusyRef.current = true;
       try {
         if (trimmed.startsWith("/")) {
+          if (trimmed === "/clear") {
+            // 本地清屏：清除 UI 历史 + 通知外层重置 agent 上下文
+            props.onClear?.();
+            setLines(props.introLines.map((t) => ({ kind: "info", text: t })));
+            setStreamingText(null);
+            setWaiting(false);
+            setStatusText(null);
+            return;
+          }
+
           const cmdBase = trimmed.split(" ")[0];
           const hasArgs = trimmed.includes(" ") && trimmed.split(" ").length > 1;
           if (props.commandsNeedArgs.includes(cmdBase) && !hasArgs) {

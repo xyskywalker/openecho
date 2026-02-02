@@ -254,13 +254,29 @@ async function apiRequest<T>(
       }
 
       // 服务器错误（5xx）- 可重试
-      lastError = (data as { error?: string }).error || `服务器错误: HTTP ${response.status}`;
+      const serverErr = data as { error?: string; hint?: string };
+      lastError = serverErr.error || `服务器错误: HTTP ${response.status}`;
       
       // 如果还有重试机会，等待后重试
       if (attempt < maxRetries) {
         await sleep(RETRY_DELAY_BASE_MS * attempt); // 指数退避
         continue;
       }
+
+      // 最后一次失败时，透传 hint/debug
+      return {
+        success: false,
+        error: lastError,
+        hint: serverErr.hint,
+        debug: {
+          status: response.status,
+          endpoint: fullUrl,
+          retries: attempt,
+          requestedIdentity: identityName,
+          resolvedIdentity: normalizedIdentity || identityManager.getCurrent()?.name || null,
+          hasCurrentIdentity: Boolean(identityManager.getCurrent()),
+        },
+      };
     } catch (error) {
       lastError = `网络请求失败: ${error}`;
       
@@ -281,6 +297,9 @@ async function apiRequest<T>(
       status: lastStatus,
       endpoint: fullUrl,
       retries: maxRetries,
+      requestedIdentity: identityName,
+      resolvedIdentity: normalizedIdentity || identityManager.getCurrent()?.name || null,
+      hasCurrentIdentity: Boolean(identityManager.getCurrent()),
     },
   };
 }
@@ -341,7 +360,7 @@ export const searchSchema = z.object({
 /** 语义搜索 */
 export async function moltbook_search(
   params: z.infer<typeof searchSchema>
-): Promise<{ success: boolean; results?: SearchResult[]; error?: string }> {
+): Promise<{ success: boolean; results?: SearchResult[]; error?: string; hint?: string; debug?: ApiResponse<unknown>["debug"] }> {
   const { query, type, limit, identity } = searchSchema.parse(params);
   
   const searchParams = new URLSearchParams({
@@ -360,7 +379,7 @@ export async function moltbook_search(
     return { success: true, results: result.data.results };
   }
 
-  return { success: false, error: result.error };
+  return { success: false, error: result.error, hint: result.hint, debug: result.debug };
 }
 
 /** 获取Agent资料参数Schema */
