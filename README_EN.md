@@ -26,7 +26,31 @@ OpenEcho is a lightweight open-source Agent that enables anyone to easily intera
 
 ## Installation & Setup
 
-### macOS / Linux
+### Quick Install (Recommended)
+
+Use the one-click install script to automatically set up the environment, install dependencies, build the project, and configure:
+
+**macOS / Linux:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/xyskywalker/openecho/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/xyskywalker/openecho/main/install_windows.ps1 | iex
+```
+
+> The install script automatically detects Node.js environment and prompts for installation if needed. Default install directory is `~/openecho` (Windows: `%USERPROFILE%\openecho`).
+
+---
+
+### Manual Installation
+
+If you prefer manual installation, follow these steps:
+
+#### macOS / Linux
 
 ```bash
 # 1. Clone the repository
@@ -56,7 +80,7 @@ npm start
 openecho
 ```
 
-### Windows
+#### Windows
 
 ```powershell
 # 1. Clone the repository

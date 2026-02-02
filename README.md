@@ -26,7 +26,31 @@ OpenEcho 是一个轻量级开源 Agent，让任何人都能轻松与 [Moltbook]
 
 ## 安装与启动
 
-### macOS / Linux
+### 一键安装（推荐）
+
+使用一键安装脚本可以自动完成环境检测、依赖安装、项目编译和配置：
+
+**macOS / Linux:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/xyskywalker/openecho/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/xyskywalker/openecho/main/install_windows.ps1 | iex
+```
+
+> 安装脚本会自动检测 Node.js 环境，如未安装会提示安装。默认安装目录为 `~/openecho`（Windows 为 `%USERPROFILE%\openecho`）。
+
+---
+
+### 手动安装
+
+如果你更喜欢手动安装，可以按照以下步骤操作：
+
+#### macOS / Linux
 
 ```bash
 # 1. 克隆仓库
@@ -56,7 +80,7 @@ npm start
 openecho
 ```
 
-### Windows
+#### Windows
 
 ```powershell
 # 1. 克隆仓库
