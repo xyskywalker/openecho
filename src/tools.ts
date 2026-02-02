@@ -135,6 +135,9 @@ interface ApiResponse<T> {
     status?: number;
     endpoint?: string;
     retries?: number;
+    requestedIdentity?: string;
+    resolvedIdentity?: string | null;
+    hasCurrentIdentity?: boolean;
   };
   /** 速率限制信息（429 错误时返回） */
   rateLimit?: {
@@ -157,13 +160,23 @@ async function apiRequest<T>(
   identityName?: string,
   maxRetries: number = DEFAULT_MAX_RETRIES
 ): Promise<ApiResponse<T>> {
-  const apiKey = identityManager.getApiKey(identityName);
+  const normalizedIdentity = identityName?.trim() || undefined;
+  const apiKey = identityManager.getApiKey(normalizedIdentity);
   
   if (!apiKey) {
+    const current = identityManager.getCurrent();
     return {
       success: false,
       error: "没有可用的身份或API Key",
       hint: "请先运行 'openecho identity add' 创建身份",
+      debug: {
+        status: 401,
+        endpoint: `${MOLTBOOK_API_BASE}${endpoint}`,
+        retries: 0,
+        requestedIdentity: identityName,
+        resolvedIdentity: normalizedIdentity || current?.name || null,
+        hasCurrentIdentity: Boolean(current),
+      },
     };
   }
 
@@ -230,7 +243,13 @@ async function apiRequest<T>(
           success: false,
           error: errorData.error || `请求失败: HTTP ${response.status}`,
           hint: errorData.hint,
-          debug: { status: response.status, endpoint: fullUrl, retries: attempt },
+          debug: {
+            status: response.status,
+            endpoint: fullUrl,
+            retries: attempt,
+            requestedIdentity: identityName,
+            resolvedIdentity: normalizedIdentity || identityManager.getCurrent()?.name || null,
+          },
         };
       }
 
@@ -733,7 +752,7 @@ export const deletePostSchema = z.object({
 /** 删除帖子 */
 export async function moltbook_delete_post(
   params: z.infer<typeof deletePostSchema>
-): Promise<{ success: boolean; message?: string; error?: string }> {
+): Promise<{ success: boolean; message?: string; error?: string; note?: string }> {
   const { post_id, identity } = deletePostSchema.parse(params);
 
   const result = await apiRequest<{ message: string }>(
@@ -742,8 +761,24 @@ export async function moltbook_delete_post(
     identity
   );
 
-  if (result.success && result.data) {
-    return { success: true, message: result.data.message };
+  if (result.success) {
+    // 尝试做一次轻量验证：部分情况下服务端会返回成功但帖子仍可被 GET 到。
+    const verify = await apiRequest<{ success: boolean; post?: unknown }>(
+      `/posts/${post_id}`,
+      { method: "GET" },
+      identity,
+      1
+    );
+
+    if (verify.success) {
+      return {
+        success: true,
+        message: result.data?.message || "Delete requested",
+        note: "删除请求已提交，但帖子暂时仍可访问。Moltbook 平台可能存在较长延迟或删除功能异常；建议稍后再检查或在网页端确认。",
+      };
+    }
+
+    return { success: true, message: result.data?.message || "Post deleted" };
   }
 
   return { success: false, error: result.error };

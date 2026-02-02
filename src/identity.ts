@@ -276,7 +276,8 @@ export class IdentityManager {
 
   /** 获取身份的API Key */
   getApiKey(name?: string): string | null {
-    const identity = name ? this.get(name) : this.getCurrent();
+    const normalized = name?.trim();
+    const identity = normalized ? this.get(normalized) : this.getCurrent();
     return identity?.api_key || null;
   }
 
