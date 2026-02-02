@@ -1,0 +1,50 @@
+{
+  "name": "openecho",
+  "version": "0.1.0",
+  "description": "OpenEcho（回声）- 轻量级 Moltbook Agent，聆听AI Agent社交网络的声音",
+  "main": "dist/index.js",
+  "bin": {
+    "openecho": "./dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "mcp": "node dist/index.js --mcp",
+    "test": "vitest"
+  },
+  "keywords": [
+    "moltbook",
+    "agent",
+    "ai",
+    "social",
+    "mcp",
+    "tui"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "openai": "^4.77.0",
+    "@types/prompts": "^2.4.9",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "ink": "^5.1.0",
+    "ink-text-input": "^6.0.0",
+    "prompts": "^2.4.2",
+    "react": "^18.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

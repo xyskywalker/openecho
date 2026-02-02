@@ -1,0 +1,149 @@
+{
+  "_comment": "OpenEcho LLM 配置文件",
+  "_location": "复制到 ~/.openecho/config.json",
+  
+  "current": "claude-default",
+  
+  "models": {
+    
+    "claude-default": {
+      "name": "claude-default",
+      "description": "Claude Sonnet 默认配置",
+      "provider": "claude",
+      "api_key": "sk-ant-api03-xxxxx",
+      "model": "claude-sonnet-4-20250514"
+    },
+    
+    "claude-opus": {
+      "name": "claude-opus",
+      "description": "Claude Opus 高级推理",
+      "provider": "claude",
+      "api_key": "sk-ant-api03-xxxxx",
+      "model": "claude-opus-4-20250514"
+    },
+    
+    "openai-gpt4o": {
+      "name": "openai-gpt4o",
+      "description": "OpenAI GPT-4o",
+      "provider": "openai",
+      "api_key": "sk-xxxxx",
+      "model": "gpt-4o"
+    },
+    
+    "openai-o1": {
+      "name": "openai-o1",
+      "description": "OpenAI o1 推理模型",
+      "provider": "openai",
+      "api_key": "sk-xxxxx",
+      "model": "o1"
+    },
+
+    "azure-gpt4o": {
+      "_comment": "Azure OpenAI v1 API (2025年8月后推荐)",
+      "name": "azure-gpt4o",
+      "description": "Azure OpenAI GPT-4o",
+      "provider": "azure",
+      "api_key": "your-azure-api-key",
+      "azure_resource": "my-openai-resource",
+      "model": "gpt-4o-deployment"
+    },
+    
+    "azure-gpt4o-direct": {
+      "_comment": "直接指定 Azure endpoint (与上面等效)",
+      "name": "azure-gpt4o-direct",
+      "description": "Azure OpenAI (直接 endpoint)",
+      "provider": "azure",
+      "api_key": "your-azure-api-key",
+      "endpoint": "https://my-openai-resource.openai.azure.com/openai/v1",
+      "model": "gpt-4o-deployment"
+    },
+    
+    "deepseek": {
+      "name": "deepseek",
+      "description": "DeepSeek Chat",
+      "provider": "custom",
+      "api_key": "sk-xxxxx",
+      "endpoint": "https://api.deepseek.com/v1",
+      "model": "deepseek-chat"
+    },
+    
+    "deepseek-r1": {
+      "name": "deepseek-r1",
+      "description": "DeepSeek R1 推理模型",
+      "provider": "custom",
+      "api_key": "sk-xxxxx",
+      "endpoint": "https://api.deepseek.com/v1",
+      "model": "deepseek-reasoner"
+    },
+    
+    "moonshot": {
+      "name": "moonshot",
+      "description": "Moonshot AI (Kimi)",
+      "provider": "custom",
+      "api_key": "sk-xxxxx",
+      "endpoint": "https://api.moonshot.cn/v1",
+      "model": "moonshot-v1-128k"
+    },
+    
+    "qwen": {
+      "name": "qwen",
+      "description": "阿里云通义千问",
+      "provider": "custom",
+      "api_key": "sk-xxxxx",
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model": "qwen-max"
+    },
+    
+    "ollama-local": {
+      "name": "ollama-local",
+      "description": "本地 Ollama 服务",
+      "provider": "custom",
+      "api_key": "ollama",
+      "endpoint": "http://localhost:11434/v1",
+      "model": "llama3.2"
+    },
+    
+    "lmstudio": {
+      "name": "lmstudio",
+      "description": "本地 LM Studio",
+      "provider": "custom",
+      "api_key": "lm-studio",
+      "endpoint": "http://localhost:1234/v1",
+      "model": "local-model"
+    },
+    
+    "openrouter": {
+      "name": "openrouter",
+      "description": "OpenRouter 聚合服务",
+      "provider": "custom",
+      "api_key": "sk-or-xxxxx",
+      "endpoint": "https://openrouter.ai/api/v1",
+      "model": "anthropic/claude-3.5-sonnet"
+    }
+  },
+  
+  "_providers_doc": {
+    "claude": "Anthropic Claude 官方 API",
+    "openai": "OpenAI 官方 API", 
+    "azure": "Azure OpenAI 服务 (新 v1 API，直接兼容 OpenAI SDK)",
+    "custom": "任何兼容 OpenAI Chat Completions API 格式的服务"
+  },
+  
+  "_azure_doc": {
+    "说明": "Azure OpenAI 支持两种配置方式",
+    "方式1": "指定 azure_resource，系统自动构建 endpoint",
+    "方式2": "直接指定完整的 endpoint URL",
+    "endpoint格式": "https://<resource>.openai.azure.com/openai/v1",
+    "model字段": "填写你在 Azure 上创建的 deployment name"
+  },
+  
+  "_env_vars_doc": {
+    "说明": "环境变量优先级最高",
+    "OPENECHO_API_KEY": "API Key",
+    "OPENECHO_LLM_PROVIDER": "Provider (claude/openai/azure/custom)",
+    "OPENECHO_MODEL": "模型名称",
+    "OPENECHO_ENDPOINT": "自定义 endpoint",
+    "ANTHROPIC_API_KEY": "兼容旧版，自动使用 claude",
+    "OPENAI_API_KEY": "兼容旧版，自动使用 openai"
+  }
+}
