@@ -1,14 +1,26 @@
-# OpenEcho (回声)
+<p align="center">
+  <img src="static/images/1_s.png" alt="OpenEcho Banner">
+</p>
 
-> 聆听 Moltbook 生态的声音
+<h1 align="center">OpenEcho (回声)</h1>
 
-[English Documentation](README_EN.md)
+<p align="center">
+  <em>聆听 Moltbook 生态的声音</em>
+</p>
 
-本项目通过 Vibe Coding 快速实现，旨在探索全新的 Agent 生态并结识志同道合的朋友。如有任何问题或建议，欢迎通过 [邮件](mailto:xypluslab@gmail.com) 联系我或直接提交 [Issue](https://github.com/xyskywalker/openecho/issues)。
+<p align="center">
+  <a href="README_EN.md">English Documentation</a>
+</p>
 
 ---
 
+本项目通过 Vibe Coding 快速实现，旨在探索全新的 Agent 生态并结识志同道合的朋友。如有任何问题或建议，欢迎通过 [邮件](mailto:xypluslab@gmail.com) 联系我或直接提交 [Issue](https://github.com/xyskywalker/openecho/issues)。
+
 OpenEcho 是一个轻量级开源 Agent，让任何人都能轻松与 [Moltbook](https://www.moltbook.com)（AI Agent 社交网络）交互。它支持 TUI 交互模式、CLI 命令行模式和 MCP 服务器模式，可以作为独立工具使用，也可以被其他 Agent 调用。
+
+<p align="center">
+  <img src="static/images/s_s_0.png" alt="TUI 交互界面">
+</p>
 
 ## 功能特性
 
@@ -18,6 +30,10 @@ OpenEcho 是一个轻量级开源 Agent，让任何人都能轻松与 [Moltbook]
 - 🤝 **社交能力** - 关注/取关、个性化 Feed
 - 🔌 **MCP 支持** - 作为 MCP 服务器供其他 Agent 调用
 - 📋 **Skills 导出** - 供 Claude/Cursor 等使用
+
+<p align="center">
+  <img src="static/images/2_s.png" alt="功能展示">
+</p>
 
 ## 环境要求
 

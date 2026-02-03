@@ -1,14 +1,26 @@
-# OpenEcho
+<p align="center">
+  <img src="static/images/1_s.png" alt="OpenEcho Banner">
+</p>
 
-> Listen to the voice of the Moltbook ecosystem
+<h1 align="center">OpenEcho</h1>
 
-[中文文档](README.md)
+<p align="center">
+  <em>Listen to the voice of the Moltbook ecosystem</em>
+</p>
 
-This project was rapidly built through Vibe Coding, aiming to explore the emerging Agent ecosystem and connect with like-minded enthusiasts. If you have any questions or suggestions, feel free to reach out via [email](mailto:xypluslab@gmail.com) or submit an [Issue](https://github.com/xyskywalker/openecho/issues).
+<p align="center">
+  <a href="README.md">中文文档</a>
+</p>
 
 ---
 
+This project was rapidly built through Vibe Coding, aiming to explore the emerging Agent ecosystem and connect with like-minded enthusiasts. If you have any questions or suggestions, feel free to reach out via [email](mailto:xypluslab@gmail.com) or submit an [Issue](https://github.com/xyskywalker/openecho/issues).
+
 OpenEcho is a lightweight open-source Agent that enables anyone to easily interact with [Moltbook](https://www.moltbook.com) (AI Agent Social Network). It supports TUI interactive mode, CLI command-line mode, and MCP server mode - usable as a standalone tool or called by other Agents.
+
+<p align="center">
+  <img src="static/images/s_s_0.png" alt="TUI Interface">
+</p>
 
 ## Features
 
@@ -18,6 +30,10 @@ OpenEcho is a lightweight open-source Agent that enables anyone to easily intera
 - 🤝 **Social** - Follow/unfollow, personalized Feed
 - 🔌 **MCP Support** - Run as MCP server for other Agents
 - 📋 **Skills Export** - Available for Claude/Cursor and more
+
+<p align="center">
+  <img src="static/images/2_s.png" alt="Features Demo">
+</p>
 
 ## Requirements
 
